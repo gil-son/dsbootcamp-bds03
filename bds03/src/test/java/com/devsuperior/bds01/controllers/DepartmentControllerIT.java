@@ -51,8 +51,11 @@ public class DepartmentControllerIT {
 	@Test
 	public void findAllShouldReturnAllResourcesSortedByName() throws Exception {
 		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, adminPassword);
+		
 		ResultActions result =
 				mockMvc.perform(get("/departments")
+					.header("Authorization", "Bearer"+ accessToken)
 					.contentType(MediaType.APPLICATION_JSON));
 
 		result.andExpect(status().isOk());
@@ -60,4 +63,38 @@ public class DepartmentControllerIT {
 		result.andExpect(jsonPath("$[1].name").value("Management"));
 		result.andExpect(jsonPath("$[2].name").value("Training"));
 	}
+	
+	
+	@Test
+	public void findAllShouldReturnAllResourcesSortedByNameWhenOperatorLogged() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, operatorUsername, operatorPassword);
+		
+		ResultActions result =
+				mockMvc.perform(get("/departments")
+					.header("Authorization", "Bearer"+ accessToken)
+					.contentType(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$[0].name").value("Sales"));
+		result.andExpect(jsonPath("$[1].name").value("Management"));
+		result.andExpect(jsonPath("$[2].name").value("Training"));
+	}
+	
+	
+	@Test
+	public void findAllShouldReturn401WhenNoUserLogged() throws Exception {
+				
+		ResultActions result =
+				mockMvc.perform(get("/departments")
+					.contentType(MediaType.APPLICATION_JSON));
+
+		result.andExpect(status().isUnauthorized());
+	}
+	
+	
+	
+	
+	
+	
 }
