@@ -81,4 +81,40 @@ public class EmployeeControllerIT {
 		
 		result.andExpect(status().isUnauthorized());
 	}	
+	
+	
+	@Test
+	public void insertShouldInsertResourceWhenAdminLoggedCorrectData() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, adminPassword);	
+		
+		EmployeeDTO dto = new EmployeeDTO(null, "Joaquim", "joaquim@gmail.com", 1L);
+		String jsonBody = objectMapper.writeValueAsString(dto);
+
+		ResultActions result =
+				mockMvc.perform(post("/employees")
+					.header("Authorization", "Bearer"+ accessToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isCreated());
+		result.andExpect(jsonPath("$.id").exists());
+		result.andExpect(jsonPath("$.name").value("Joaquim"));
+		result.andExpect(jsonPath("$.email").value("joaquim@gmail.com"));
+		result.andExpect(jsonPath("$.departmentId").value(1L));
+
+		
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
