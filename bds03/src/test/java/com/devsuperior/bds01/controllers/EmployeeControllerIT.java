@@ -155,5 +155,26 @@ public class EmployeeControllerIT {
 	
 	
 	
+	@Test
+	public void insertShouldReturn422WhenAdminLoggedAndNullDepartmanent() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, adminPassword);	
+		
+		EmployeeDTO dto = new EmployeeDTO(null, "Joaquim", "joaquim@", null);
+		String jsonBody = objectMapper.writeValueAsString(dto);
+
+		ResultActions result =
+				mockMvc.perform(post("/employees")
+					.header("Authorization", "Bearer"+ accessToken)
+					.content(jsonBody)
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON));
+		
+		result.andExpect(status().isUnprocessableEntity());
+		result.andExpect(jsonPath("$.errors[0].fieldName").value("departmentId"));
+		result.andExpect(jsonPath("$.errors[0].message").value("Required field"));
+		
+		
+	}	
 	
 }
