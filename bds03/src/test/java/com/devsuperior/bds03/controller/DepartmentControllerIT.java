@@ -1,4 +1,4 @@
-package com.devsuperior.bds01.controllers;
+package com.devsuperior.bds03.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -25,8 +25,6 @@ public class DepartmentControllerIT {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	@Autowired
-	private ObjectMapper objectMapper;
 	
 	@Autowired
 	private TokenUtil tokenUtil;

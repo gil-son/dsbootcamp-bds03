@@ -27,11 +27,11 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	
 	// something/** = all after something is access
 	
-	private static final String[] PUBLIC = {"/oauth/token", "/h2-console/**"}; // route to login, products or categories
+	private static final String[] PUBLIC = {"/oauth/token", "/h2-console/**"}; // route to login  / this path or everything after this path
 	
-	private static final String[] OPERATOR_OR_ADMIN = {"/products/**", "/categories/**"};	 //	hierarchical access of users and products or categories cadastre							
+	private static final String[] OPERATOR = {"/departments/**", "/employees/**"};	 //	hierarchical access of users and products or categories cadastre							
 											
-	private static final String[] ADMIN = {"/users/**"}; // only admin
+	// private static final String[] ADMIN = {"/users/**"}; // only admin
 	
 	@Override
 	public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
@@ -43,16 +43,14 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 		
 		// Access H2
 		if(Arrays.asList(env.getActiveProfiles()).contains("test")){// If actives profiles contains test profiles
-			http.headers().frameOptions().disable(); // release the frames
+			http.headers().frameOptions().disable(); // release the frames and include h2 frame
 		}
 		
 		
 		http.authorizeRequests()
-		.antMatchers(PUBLIC).permitAll() // Permit all route PUBLIC dont required login
-		.antMatchers(HttpMethod.GET, OPERATOR_OR_ADMIN).permitAll() // Permit all route with method get and OPERATOR_OR_ADMIN
-		.antMatchers(OPERATOR_OR_ADMIN).hasAnyRole("OPERATOR","ADMIN") // Permit any access to OPERATOR_OR_ADMIN has "OPERATOR" or "ADMIN" (defined on data.sql)
-		.antMatchers(ADMIN).hasRole("ADMIN")
-		.anyRequest().authenticated(); // any other route require be authenticated and logged, independent of the perfil
+		.antMatchers(PUBLIC).permitAll() // Permit all route PUBLIC dont required login (OAuth)
+		.antMatchers(HttpMethod.GET, OPERATOR).hasAnyRole("OPERATOR","ADMIN") // Permit (OPERATOR_OR_ADMIN) route with only method GET (this case verify the method and route)
+		.anyRequest().hasAnyRole("ADMIN");
 	}
 
 }
